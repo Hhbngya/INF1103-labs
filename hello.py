@@ -21,3 +21,23 @@ print("Followers:", followers)
 #Question 2b: If I change the values, the output will change. 
 # Since print("Username:", username)reads whatever username currently holds at the moment the line runs.
 
+followers = 100
+
+followers += 50
+print("Day 1:", followers)
+
+followers += 20
+print("Day 2:", followers)
+
+followers -= 10
+print("Day 3:", followers)
+
+# Question 2a: No, 
+# since followers += 50, python reads the current value, 
+# adds 50 and stores the result back into follwers, all in one line.
+# Question 2b: The existing value, not the original 100. 
+# Each line updates the variable in place, 
+# so every subsequent operation builds on whatever the varibale holds at the point, not the original value. 
+# Question 2c: They are compound assignment operators, combines an srithmetic operation with reassignment in one step.
+# x += n means "add n to x and store it back to x";
+# x -= n means "subtract n from x and store it back to x"
