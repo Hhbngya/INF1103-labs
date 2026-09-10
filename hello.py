@@ -41,3 +41,21 @@ print("Day 3:", followers)
 # Question 2c: They are compound assignment operators, combines an srithmetic operation with reassignment in one step.
 # x += n means "add n to x and store it back to x";
 # x -= n means "subtract n from x and store it back to x"
+
+username = input("Enter Username: ")
+age = input("Enter Age: ")
+category = input("Enter Content Category: ")
+
+print("\nInstagram Profile")
+print("====================")
+print("Username:", username)
+print("Age:", age)
+print("Category:", category)
+
+#Question 2a: When python hits inout("Enter Username: "), it prints the prompt text,
+# then pauses the program and waits the terminal for user to key in text.
+# Whatever the text is, it will become the return value of that input() call,
+# which then gets store into the variables.
+#Question 2b: Dynamic. Activity 2, username = "cool_creator" was a fixed value, never change unless change the source
+# but now username = input() which means the value comes from whoever runs the program.
+#Question 2c: 
