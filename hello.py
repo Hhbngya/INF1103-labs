@@ -58,4 +58,22 @@ print("Category:", category)
 # which then gets store into the variables.
 #Question 2b: Dynamic. Activity 2, username = "cool_creator" was a fixed value, never change unless change the source
 # but now username = input() which means the value comes from whoever runs the program.
-#Question 2c: 
+#Question 2c: Tried with two different inputs and whatever I key in, it came out.
+
+username = input("Enter Username: ")
+age = int(input("Enter Age: "))
+category = input("Enter Content Category: ")
+
+print("\nInstagram Profile")
+print("====================")
+print("Username:", username)
+print("Age:", age)
+print("Category:", category)
+
+if age>40 and category == "fun":
+    print("You are old what is fun for you??")
+
+#Question 3a: input() always returns a string, regardless of what the user types.
+#Question 3b: The if statement checks two things: whether age is greater than 40
+# and whether category is equal to fun. Each check gives a True or False answer.
+# Both checks must be True for the message to print. If one is false, nothing happen and will skip if block.
