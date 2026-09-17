@@ -18,12 +18,3 @@ while True:
     elif int(user_entry) < 0:
         print("ERROR Please enter positive digit!")
         failed_entries += 1
-    
-    else:
-        quantity = int(user_entry)
-        total_inventory += quantity
-        if total_inventory > 500:
-            print("Overstock Alert! Inventory exceeds 500 units")
-            break
-    
-print("Total Units Processed:", total_inventory, "units", "\nNumber of Failed/Rejected Entries:", failed_entries)
