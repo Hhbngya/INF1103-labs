@@ -23,10 +23,16 @@ def process_delivery(current_total, new_value):
     new_total = current_total + new_value
     return new_total
 
+# Function 3: Work out the 10% tax on one delivery
+def calculate_tax(amount):
+    tax = amount * 0.10
+    return tax
+
 # Main program
 # Initialize the inventory to 0
 total_inventory = 0
 failed_entries = 0
+delivery_count = 0
 
 # Continuous loop until user quits
 while True:
@@ -41,6 +47,9 @@ while True:
 
     else:
         total_inventory = process_delivery(total_inventory, quantity)
+        tax = calculate_tax(quantity)
+        delivery_count += 1
+        print("Delivery", delivery_count, "- Quantity:", quantity, "| Tax:", tax)
 
 print("Total Units Processed:", total_inventory)
 print("Number of Failed/Rejected Entries:", failed_entries)
