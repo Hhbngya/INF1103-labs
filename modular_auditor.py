@@ -17,6 +17,11 @@ def get_valid_input():
 
     else:
         return int(user_entry)
+    
+# Function 2: Add the new delivery to the total and return the new total
+def process_delivery(current_total, new_value):
+    new_total = current_total + new_value
+    return new_total
 
 # Main program
 # Initialize the inventory to 0
@@ -35,7 +40,7 @@ while True:
         failed_entries += 1  # increment the counter
 
     else:
-        total_inventory += quantity
+        total_inventory = process_delivery(total_inventory, quantity)
 
 print("Total Units Processed:", total_inventory)
 print("Number of Failed/Rejected Entries:", failed_entries)
