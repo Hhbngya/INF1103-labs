@@ -31,15 +31,23 @@ def load_inventory():
     try:
         with open('orders.txt', 'r') as file:
             lines = file.readlines()
-            total = int(lines[0])
-            for line in lines[1:]:
-                name, amount = line.strip().split(',')
-                products.append(name)
-                history.append(int(amount))
+            if len(lines) > 0:                 # only read if the file has content
+                total = int(lines[0])
+                for line in lines[1:]:
+                    name, amount = line.strip().split(',')
+                    products.append(name)
+                    history.append(int(amount))
     except FileNotFoundError:
         pass    # no file yet, start with empty orders
 
     return total, products, history
+
+# Function 3: Write the total, products and history to orders.txt
+def save_inventory(total, products, history):
+    with open('orders.txt', 'w') as file:
+        file.write(str(total) + "\n")
+        for i in range(len(history)):
+            file.write(products[i] + "," + str(history[i]) + "\n")
 
 # Function 4: Show every order numbered from 1001
 def show_orders(products, history):
@@ -61,6 +69,7 @@ while True:
     result = get_valid_input()
 
     if result == "quit":
+        save_inventory(total_inventory, products, history)
         print("You have quit the program.")
         break
 
@@ -76,7 +85,9 @@ while True:
         print("New Order Added:")
         print(str(order_number) + "," + product_name + "," + str(quantity))
         print()
+        save_inventory(total_inventory, products, history)
+        print("Order successfully saved to orders.txt")
+        print()
 
 print("\nFinal Total:", total_inventory)
-print("Transaction History:", history)
 print("Failed Entries:", failed_entries)
