@@ -1,4 +1,4 @@
-# Week 5 Lab
+# Week 5 Lab - Inventory Management System with JSON persistence
 import json
 import os
 
@@ -17,6 +17,11 @@ def load_inventory():
     print("inventory.json not found.")
     print("Starting with an empty inventory.")
     return {"products": [], "transactions": []}
+
+
+def save_inventory(data):
+    with open(FILENAME, "w") as file:
+        json.dump(data, file, indent=4)
 
 
 # ---------- Data Manipulation ----------
@@ -59,6 +64,7 @@ def update_stock(data):
     print("Current Stock:", product["stock"])
 
     new_stock = int(input("\nNew Stock Quantity: "))
+    # record the transaction amount (change in stock x price) in the history
     amount = (new_stock - product["stock"]) * product["price"]
     data["transactions"].append(round(amount, 2))
     product["stock"] = new_stock
@@ -66,6 +72,7 @@ def update_stock(data):
 
 
 def search_product(data, product_id):
+    # Return the product dictionary with this ID, or None if not found.
     for product in data["products"]:
         if product["id"] == product_id:
             return product
@@ -114,8 +121,13 @@ def main():
                 print("Stock:", product["stock"])
                 print(LINE)
         elif choice == "5":
-            print("\nSave is not available yet.")
+            print("\nSaving inventory...")
+            save_inventory(data)
+            print("Inventory saved successfully to inventory.json.")
         elif choice == "6":
+            print("\nSaving inventory before exit...")
+            save_inventory(data)
+            print("Inventory saved successfully.")
             print("\nThank you for using Inventory Management System.")
             print("Program terminated.")
             break
