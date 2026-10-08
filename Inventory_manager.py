@@ -1,5 +1,22 @@
-# Week 5 Lab - Stage 1: dictionaries and functions
+# Week 5 Lab
+import json
+import os
+
+FILENAME = "inventory.json"
 LINE = "-" * 45
+
+
+# ---------- Data Persistence ----------
+def load_inventory():
+    if os.path.exists(FILENAME):
+        with open(FILENAME, "r") as file:
+            data = json.load(file)
+        print("inventory.json found.")
+        print("Inventory loaded successfully.")
+        return data
+    print("inventory.json not found.")
+    print("Starting with an empty inventory.")
+    return {"products": [], "transactions": []}
 
 
 # ---------- Data Manipulation ----------
@@ -60,16 +77,9 @@ def main():
     print("=" * 40)
     print("INVENTORY MANAGEMENT SYSTEM")
     print("=" * 40)
+    print()
 
-    # products stored as dictionaries inside a list
-    data = {
-        "products": [
-            {"id": "P001", "name": "Laptop", "price": 1200.0, "stock": 15},
-            {"id": "P002", "name": "Mouse", "price": 25.5, "stock": 40},
-            {"id": "P003", "name": "Keyboard", "price": 45.0, "stock": 25},
-        ],
-        "transactions": [],
-    }
+    data = load_inventory()
 
     print("\n----------- MENU -----------")
     print("1. Display All Products")
