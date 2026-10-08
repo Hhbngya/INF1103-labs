@@ -23,9 +23,16 @@
             "name": "Monitor",
             "price": 299.99,
             "stock": 10
+        },
+        {
+            "id": "P005",
+            "name": "Charger",
+            "price": 30.5,
+            "stock": 15
         }
     ],
     "transactions": [
-        255.0
+        255.0,
+        152.5
     ]
 }
