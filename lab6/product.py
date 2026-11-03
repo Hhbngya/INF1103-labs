@@ -24,4 +24,5 @@ class Product:
             self.__stock = quantity
 
     def display_information(self):
-        print(f"{self.__product_id:<8}{self.__name:<20}${self.__price:<10.2f}{self.__stock}")
+        print(f"ID: {self.__product_id} | Name: {self.__name} | "
+              f"Price: ${self.__price:.2f} | Stock: {self.__stock}")
