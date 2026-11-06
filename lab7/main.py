@@ -1,8 +1,10 @@
-# Week 8 Lab - Inventory Management System using OOP
+# Week 9 Lab - Inventory Management System with Inheritance
 import json
 import os
 
-from product import Product
+from physical_product import PhysicalProduct
+from digital_product import DigitalProduct
+from can_be_shipped import CanBeShipped
 from inventory import Inventory
 
 FILENAME = "inventory.json"
@@ -11,12 +13,17 @@ LINE = "-" * 45
 
 # ---------- Data Persistence ----------
 def load_inventory(inventory):
-    # Turn each product dictionary from the file into a Product object.
+    # Use the "type" in each saved product to create the right subclass.
     if os.path.exists(FILENAME):
         with open(FILENAME, "r") as file:
             data = json.load(file)
         for item in data["products"]:
-            product = Product(item["id"], item["name"], item["price"], item["stock"])
+            if item["type"] == "physical":
+                product = PhysicalProduct(item["id"], item["name"], item["price"],
+                                          item["stock"], item["weight"])
+            else:
+                product = DigitalProduct(item["id"], item["name"], item["price"],
+                                         item["stock"], item["download_size"])
             inventory.add_product(product)
         print("inventory.json found.")
         print("Inventory loaded successfully.")
@@ -27,15 +34,22 @@ def load_inventory(inventory):
 
 
 def save_inventory(inventory, transactions):
-    # Turn each Product object back into a dictionary so it can be saved.
+    # Save the type and the extra attribute so loading can rebuild the right subclass.
     products = []
     for product in inventory.get_products():
-        products.append({
+        item = {
             "id": product.get_id(),
             "name": product.get_name(),
             "price": product.get_price(),
             "stock": product.get_stock()
-        })
+        }
+        if isinstance(product, PhysicalProduct):
+            item["type"] = "physical"
+            item["weight"] = product.get_weight()
+        else:
+            item["type"] = "digital"
+            item["download_size"] = product.get_download_size()
+        products.append(item)
     data = {"products": products, "transactions": transactions}
     with open(FILENAME, "w") as file:
         json.dump(data, file, indent=4)
@@ -44,6 +58,13 @@ def save_inventory(inventory, transactions):
 # ---------- Menu Actions ----------
 def add_product(inventory):
     print("\nAdd New Product")
+    print("1. Physical Product")
+    print("2. Digital Product")
+    product_type = input("Choose product type: ")
+    if product_type not in ("1", "2"):
+        print("\nInvalid product type.")
+        return
+
     product_id = input("Product ID: ").upper()
     if inventory.search_product(product_id) is not None:
         print("\nProduct ID already exists.")
@@ -52,7 +73,13 @@ def add_product(inventory):
     price = float(input("Price: "))
     stock = int(input("Stock Quantity: "))
 
-    product = Product(product_id, name, price, stock)
+    if product_type == "1":
+        weight = float(input("Weight (kg): "))
+        product = PhysicalProduct(product_id, name, price, stock, weight)
+    else:
+        download_size = float(input("Download Size (MB): "))
+        product = DigitalProduct(product_id, name, price, stock, download_size)
+
     inventory.add_product(product)
     print("\nProduct added successfully!")
 
@@ -89,10 +116,11 @@ def search_product(inventory):
     else:
         print("\nProduct Found")
         print(LINE)
-        print("ID:", product.get_id())
-        print("Name:", product.get_name())
-        print(f"Price: ${product.get_price():.2f}")
-        print("Stock:", product.get_stock())
+        product.display_information()
+        print("Fulfilment:", product.get_fulfilment_info())
+        # only products that signed the CanBeShipped contract have a shipping cost
+        if isinstance(product, CanBeShipped):
+            print(f"Shipping Cost: ${product.calculate_shipping_cost():.2f}")
         print(LINE)
 
 

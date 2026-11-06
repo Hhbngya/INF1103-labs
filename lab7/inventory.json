@@ -4,42 +4,50 @@
             "id": "P001",
             "name": "Laptop",
             "price": 1200.0,
-            "stock": 15
+            "stock": 15,
+            "type": "physical",
+            "weight": 2.5
         },
         {
             "id": "P002",
             "name": "Mouse",
             "price": 25.5,
-            "stock": 45
+            "stock": 45,
+            "type": "physical",
+            "weight": 0.2
         },
         {
             "id": "P003",
             "name": "Keyboard",
             "price": 45.0,
-            "stock": 25
+            "stock": 25,
+            "type": "physical",
+            "weight": 0.8
         },
         {
             "id": "P004",
             "name": "Monitor",
             "price": 299.99,
-            "stock": 10
+            "stock": 10,
+            "type": "physical",
+            "weight": 5.0
         },
         {
-            "id": "P005",
-            "name": "Charger",
-            "price": 30.5,
-            "stock": 15
+            "id": "D001",
+            "name": "Python eBook",
+            "price": 19.9,
+            "stock": 100,
+            "type": "digital",
+            "download_size": 15.5
         },
         {
-            "id": "P006",
-            "name": "USB Cable",
-            "price": 9.9,
-            "stock": 30
+            "id": "D002",
+            "name": "Antivirus Licence",
+            "price": 59.0,
+            "stock": 50,
+            "type": "digital",
+            "download_size": 350.0
         }
     ],
-    "transactions": [
-        255.0,
-        152.5,
-        -127.5
-    ]
+    "transactions": []
 }
