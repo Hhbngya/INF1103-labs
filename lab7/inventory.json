@@ -12,7 +12,7 @@
             "id": "P002",
             "name": "Mouse",
             "price": 25.5,
-            "stock": 45,
+            "stock": 40,
             "type": "physical",
             "weight": 0.2
         },
@@ -47,7 +47,25 @@
             "stock": 50,
             "type": "digital",
             "download_size": 350.0
+        },
+        {
+            "id": "P005",
+            "name": "Charger",
+            "price": 30.5,
+            "stock": 15,
+            "type": "physical",
+            "weight": 0.3
+        },
+        {
+            "id": "D003",
+            "name": "Photo Editor",
+            "price": 89.0,
+            "stock": 40,
+            "type": "digital",
+            "download_size": 1200.0
         }
     ],
-    "transactions": []
+    "transactions": [
+        -127.5
+    ]
 }
