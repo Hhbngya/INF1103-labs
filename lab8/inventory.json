@@ -1,10 +1,28 @@
 {
+    "suppliers": [
+        {
+            "id": "S001",
+            "name": "TechWorld Pte Ltd",
+            "email": "sales@techworld.com"
+        },
+        {
+            "id": "S002",
+            "name": "Gadget Hub",
+            "email": "orders@gadgethub.com"
+        },
+        {
+            "id": "S003",
+            "name": "SoftSource",
+            "email": "licensing@softsource.com"
+        }
+    ],
     "products": [
         {
             "id": "P001",
             "name": "Laptop",
             "price": 1200.0,
             "stock": 15,
+            "supplier_id": "S001",
             "type": "physical",
             "weight": 2.5
         },
@@ -13,6 +31,7 @@
             "name": "Mouse",
             "price": 25.5,
             "stock": 40,
+            "supplier_id": "S002",
             "type": "physical",
             "weight": 0.2
         },
@@ -21,6 +40,7 @@
             "name": "Keyboard",
             "price": 45.0,
             "stock": 25,
+            "supplier_id": "S002",
             "type": "physical",
             "weight": 0.8
         },
@@ -29,6 +49,7 @@
             "name": "Monitor",
             "price": 299.99,
             "stock": 10,
+            "supplier_id": "S001",
             "type": "physical",
             "weight": 5.0
         },
@@ -37,6 +58,7 @@
             "name": "Python eBook",
             "price": 19.9,
             "stock": 100,
+            "supplier_id": "S003",
             "type": "digital",
             "download_size": 15.5
         },
@@ -45,27 +67,10 @@
             "name": "Antivirus Licence",
             "price": 59.0,
             "stock": 50,
+            "supplier_id": "S003",
             "type": "digital",
             "download_size": 350.0
-        },
-        {
-            "id": "P005",
-            "name": "Charger",
-            "price": 30.5,
-            "stock": 15,
-            "type": "physical",
-            "weight": 0.3
-        },
-        {
-            "id": "D003",
-            "name": "Photo Editor",
-            "price": 89.0,
-            "stock": 40,
-            "type": "digital",
-            "download_size": 1200.0
         }
     ],
-    "transactions": [
-        -127.5
-    ]
+    "transactions": []
 }
