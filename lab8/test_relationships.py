@@ -1,7 +1,7 @@
 from supplier import Supplier
 from physical_product import PhysicalProduct
 from digital_product import DigitalProduct
-
+from inventory import Inventory
 
 def test_association() -> None:
     print("=== Association: Supplier and Product ===")
@@ -24,7 +24,34 @@ def test_association() -> None:
     del laptop
     print("\nAfter 'del laptop', the supplier still exists through the eBook:")
     ebook.get_supplier().display_information()
+    
+def test_aggregation() -> None:
+    print("\n=== Aggregation: Inventory and Product ===")
+    supplier = Supplier("S002", "Gadget Hub", "orders@gadgethub.com")
+    mouse = PhysicalProduct("P002", "Mouse", 25.50, 45, supplier, 0.2)
+    print("\nProduct created before any Inventory exists:")
+    mouse.display_information()
 
+    inventory_a = Inventory()
+    inventory_b = Inventory()
+
+    inventory_a.add_product(mouse)
+    print("\nInventory A after adding the mouse:")
+    inventory_a.display_all_products()
+
+    removed = inventory_a.remove_product("P002")
+    print("\nInventory A after removing the mouse:")
+    inventory_a.display_all_products()
+
+    print("\nThe removed mouse still works:")
+    print("Removed object is the same Product?", removed is mouse)
+    mouse.update_stock(40)
+    mouse.display_information()
+
+    inventory_b.add_product(mouse)
+    print("\nThe same mouse added to Inventory B:")
+    inventory_b.display_all_products()
 
 if __name__ == "__main__":
     test_association()
+    test_aggregation()
