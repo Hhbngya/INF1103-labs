@@ -3,6 +3,7 @@ from physical_product import PhysicalProduct
 from digital_product import DigitalProduct
 from inventory import Inventory
 from order import Order
+from product import Product
 
 def test_association() -> None:
     print("=== Association: Supplier and Product ===")
@@ -84,7 +85,46 @@ def test_composition() -> None:
     print("\nAfter 'del order_2', its order line is gone, but the keyboard still exists:")
     keyboard.display_information()
 
+def show_product_details(product: Product) -> None:
+    product.display_information()
+    print(product.get_fulfilment_info())
+
+
+def test_lsp_and_polymorphism() -> None:
+    print("\n=== LSP and Polymorphism ===")
+    supplier = Supplier("S001", "TechWorld Pte Ltd", "sales@techworld.com")
+    monitor = PhysicalProduct("P004", "Monitor", 299.99, 10, supplier, 5.0)
+    licence = DigitalProduct("D002", "Antivirus Licence", 59.00, 50, supplier, 350.0)
+
+    print("\nshow_product_details() with a PhysicalProduct:")
+    show_product_details(monitor)
+    print("\nshow_product_details() with a DigitalProduct:")
+    show_product_details(licence)
+
+    print("\nupdate_stock() keeps the same meaning for both types:")
+    monitor.update_stock(8)
+    licence.update_stock(45)
+    monitor.update_stock(-1)
+    licence.update_stock(-1)
+    print("Monitor stock:", monitor.get_stock(), "| Licence stock:", licence.get_stock())
+
+    inventory = Inventory()
+    inventory.add_product(monitor)
+    inventory.add_product(licence)
+
+    print("\nOne loop over the Product collection, no isinstance():")
+    for product in inventory.get_products():
+        product.display_information()
+        print(product.get_fulfilment_info())
+
+    print("\nInventory operations work for both types:")
+    inventory.display_all_products()
+    found = inventory.find_product("D002")
+    if found is not None:
+        show_product_details(found)
+
 if __name__ == "__main__":
     test_association()
     test_aggregation()
     test_composition()
+    test_lsp_and_polymorphism()
