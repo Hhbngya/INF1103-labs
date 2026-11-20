@@ -62,7 +62,36 @@ def demo_factory() -> None:
     except ValueError as error:
         print("Caught:", error)
 
+def demo_validation() -> None:
+    print("\n=== Validation ===")
+    supplier = Supplier("S001", "TechWorld Pte Ltd", "sales@techworld.com")
+
+    try:
+        ProductFactory.create("physical", "P020", "Free Pen", 0, 10, supplier, 0.1)
+    except ValueError as error:
+        print("Price 0 rejected:", error)
+
+    try:
+        ProductFactory.create("digital", "D020", "Old Game", 15.00, -3, supplier, 800)
+    except ValueError as error:
+        print("Negative stock on a DigitalProduct rejected:", error)
+
+    ebook = ProductFactory.create("digital", "D021", "Java eBook", 18.00, 50, supplier, 12)
+    try:
+        ebook.update_stock(-5)
+    except ValueError as error:
+        print("update_stock(-5) rejected:", error)
+    print("eBook stock is still", ebook.get_stock())
+
+    order = Order("O300")
+    try:
+        order.add_order_line(ebook, 0)
+    except ValueError as error:
+        print("Order quantity 0 rejected:", error)
+    print("Order lines after the bad add:", len(order.get_order_lines()))
+
 if __name__ == "__main__":
     demo_strategy()
     demo_extension()
     demo_factory()
+    demo_validation()

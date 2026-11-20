@@ -6,6 +6,8 @@ LINE = "-" * 45
 
 class OrderLine:
     def __init__(self, product: Product, quantity: int) -> None:
+        if quantity <= 0:
+            raise ValueError("Quantity must be greater than zero.")
         # The OrderLine refers to a Product but does not own it
         self.__product: Product = product
         self.__quantity: int = quantity
