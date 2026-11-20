@@ -1,17 +1,27 @@
-# Week 10 Lab - Inventory Management System with object relationships
+# Week 11 Lab - Inventory Management System with design patterns and error handling
 import json
 import os
 
 from supplier import Supplier
-from product import Product
 from physical_product import PhysicalProduct
-from digital_product import DigitalProduct
 from can_be_shipped import CanBeShipped
 from inventory import Inventory
 from order import Order
+from product_factory import ProductFactory
+from discount import (DiscountStrategy, NoDiscount, PercentageDiscount,
+                      BulkDiscount, StudentDiscount)
+from input_helpers import get_positive_float, get_non_negative_int, get_positive_int
 
 FILENAME = "inventory.json"
 LINE = "-" * 45
+
+# The menu picks a strategy object here. Order itself never checks discount types.
+DISCOUNTS: dict[str, tuple[str, DiscountStrategy]] = {
+    "1": ("No discount", NoDiscount()),
+    "2": ("10% off", PercentageDiscount(10)),
+    "3": ("$20 off orders of $200 or more", BulkDiscount(200, 20)),
+    "4": ("Student discount (5% off)", StudentDiscount()),
+}
 
 
 # ---------- Data Persistence ----------
@@ -23,34 +33,39 @@ def find_supplier(suppliers: list[Supplier], supplier_id: str) -> Supplier | Non
 
 
 def load_inventory(inventory: Inventory, suppliers: list[Supplier]) -> list[float]:
-    if os.path.exists(FILENAME):
+    if not os.path.exists(FILENAME):
+        print("inventory.json not found.")
+        print("Starting with an empty inventory.")
+        return []
+
+    try:
         with open(FILENAME, "r") as file:
             data = json.load(file)
+    except json.JSONDecodeError:
+        print("inventory.json is damaged and could not be read.")
+        print("Starting with an empty inventory.")
+        return []
 
-        # Suppliers are created first, on their own, then linked to products
-        for item in data["suppliers"]:
-            suppliers.append(Supplier(item["id"], item["name"], item["email"]))
+    for item in data["suppliers"]:
+        suppliers.append(Supplier(item["id"], item["name"], item["email"]))
 
-        for item in data["products"]:
-            supplier = find_supplier(suppliers, item["supplier_id"])
-            if supplier is None:
-                print(f"Supplier {item['supplier_id']} not found, skipping {item['id']}.")
-                continue
-            if item["type"] == "physical":
-                product = PhysicalProduct(item["id"], item["name"], item["price"],
-                                          item["stock"], supplier, item["weight"])
-            else:
-                product = DigitalProduct(item["id"], item["name"], item["price"],
-                                         item["stock"], supplier, item["download_size"])
+    for item in data["products"]:
+        supplier = find_supplier(suppliers, item["supplier_id"])
+        if supplier is None:
+            print(f"Supplier {item['supplier_id']} not found, skipping {item['id']}.")
+            continue
+        # weight for physical products, download size for digital ones
+        detail = item.get("weight", item.get("download_size", 0.0))
+        try:
+            product = ProductFactory.create(item["type"], item["id"], item["name"],
+                                            item["price"], item["stock"], supplier, detail)
             inventory.add_product(product)
+        except ValueError as error:
+            print(f"Skipped product {item['id']}: {error}")
 
-        print("inventory.json found.")
-        print("Inventory loaded successfully.")
-        return data["transactions"]
-
-    print("inventory.json not found.")
-    print("Starting with an empty inventory.")
-    return []
+    print("inventory.json found.")
+    print("Inventory loaded successfully.")
+    return data["transactions"]
 
 
 def save_inventory(inventory: Inventory, suppliers: list[Supplier],
@@ -91,42 +106,43 @@ def add_product(inventory: Inventory, suppliers: list[Supplier]) -> None:
     print("\nAdd New Product")
     print("1. Physical Product")
     print("2. Digital Product")
-    product_type = input("Choose product type: ")
-    if product_type not in ("1", "2"):
+    choice = input("Choose product type: ")
+    if choice not in ("1", "2"):
         print("\nInvalid product type.")
         return
 
-    product_id = input("Product ID: ").upper()
+    product_id = input("Product ID: ").strip().upper()
     if inventory.find_product(product_id) is not None:
         print("\nProduct ID already exists.")
         return
-    name = input("Product Name: ")
-    price = float(input("Price: "))
-    stock = int(input("Stock Quantity: "))
+    name = input("Product Name: ").strip()
+    price = get_positive_float("Price: ")
+    stock = get_non_negative_int("Stock Quantity: ")
 
     print("\nSuppliers:")
     for supplier in suppliers:
         supplier.display_information()
-    supplier = find_supplier(suppliers, input("Supplier ID: ").upper())
+    supplier = find_supplier(suppliers, input("Supplier ID: ").strip().upper())
     if supplier is None:
         print("\nSupplier not found.")
         return
 
-    product: Product
-    if product_type == "1":
-        weight = float(input("Weight (kg): "))
-        product = PhysicalProduct(product_id, name, price, stock, supplier, weight)
+    if choice == "1":
+        product_type = "physical"
+        detail = get_positive_float("Weight (kg): ")
     else:
-        download_size = float(input("Download Size (MB): "))
-        product = DigitalProduct(product_id, name, price, stock, supplier, download_size)
+        product_type = "digital"
+        detail = get_positive_float("Download Size (MB): ")
 
+    product = ProductFactory.create(product_type, product_id, name, price,
+                                    stock, supplier, detail)
     inventory.add_product(product)
     print("\nProduct added successfully!")
 
 
 def update_stock(inventory: Inventory, transactions: list[float]) -> None:
     print("\nUpdate Stock")
-    product_id = input("Enter Product ID: ").upper()
+    product_id = input("Enter Product ID: ").strip().upper()
     product = inventory.find_product(product_id)
     if product is None:
         print("\nProduct not found.")
@@ -136,20 +152,22 @@ def update_stock(inventory: Inventory, transactions: list[float]) -> None:
     print("Name:", product.get_name())
     print("Current Stock:", product.get_stock())
 
-    new_stock = int(input("\nNew Stock Quantity: "))
+    new_stock = get_non_negative_int("\nNew Stock Quantity: ")
     old_stock = product.get_stock()
-    product.update_stock(new_stock)
+    try:
+        product.update_stock(new_stock)
+    except ValueError as error:
+        print(f"\nStock not updated: {error}")
+        return
 
-    # only record the transaction if the Product accepted the new stock
-    if product.get_stock() == new_stock:
-        amount = (new_stock - old_stock) * product.get_price()
-        transactions.append(round(amount, 2))
-        print("\nStock updated successfully!")
+    amount = (new_stock - old_stock) * product.get_price()
+    transactions.append(round(amount, 2))
+    print("\nStock updated successfully!")
 
 
 def search_product(inventory: Inventory) -> None:
     print("\nSearch Product")
-    product_id = input("Enter Product ID: ").upper()
+    product_id = input("Enter Product ID: ").strip().upper()
     product = inventory.find_product(product_id)
     if product is None:
         print("\nProduct not found.")
@@ -165,19 +183,30 @@ def search_product(inventory: Inventory) -> None:
         print(LINE)
 
 
+def choose_discount() -> DiscountStrategy:
+    print("\nDiscounts:")
+    for key, (label, _) in DISCOUNTS.items():
+        print(f"{key}. {label}")
+    while True:
+        choice = input("Choose discount: ")
+        if choice in DISCOUNTS:
+            return DISCOUNTS[choice][1]
+        print(f"Please choose 1-{len(DISCOUNTS)}.")
+
+
 def create_order(inventory: Inventory) -> None:
     print("\nCreate Order")
-    order = Order(input("Order ID: ").upper())
+    order = Order(input("Order ID: ").strip().upper(), choose_discount())
 
     while True:
-        product_id = input("\nProduct ID (press Enter to finish): ").upper()
+        product_id = input("\nProduct ID (press Enter to finish): ").strip().upper()
         if product_id == "":
             break
         product = inventory.find_product(product_id)
         if product is None:
             print("Product not found.")
             continue
-        quantity = int(input("Quantity: "))
+        quantity = get_positive_int("Quantity: ")
         order.add_order_line(product, quantity)
         print("Added to order.")
 
