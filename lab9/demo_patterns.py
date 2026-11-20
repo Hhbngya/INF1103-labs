@@ -4,6 +4,7 @@ from digital_product import DigitalProduct
 from order import Order
 from discount import BulkDiscount, PercentageDiscount
 from discount import BulkDiscount, PercentageDiscount, StudentDiscount
+from product_factory import ProductFactory
 
 
 def demo_strategy() -> None:
@@ -44,6 +45,24 @@ def demo_extension() -> None:
     print("After 'del order_a', the shared discount still works for O203:",
           f"${order_b.calculate_total():.2f}")
 
+def demo_factory() -> None:
+    print("\n=== Factory: creating products ===")
+    supplier = Supplier("S001", "TechWorld Pte Ltd", "sales@techworld.com")
+
+    lamp = ProductFactory.create("physical", "P001", "Desk Lamp", 25.00, 10, supplier, 1.2)
+    editor = ProductFactory.create("digital", "D001", "Photo Editor", 49.90, 100, supplier, 1200)
+    for product in [lamp, editor]:
+        print(f"\nFactory made a {type(product).__name__}:")
+        product.display_information()
+        print(product.get_fulfilment_info())
+
+    print("\nAsking the factory for an unknown type:")
+    try:
+        ProductFactory.create("service", "S001", "Installation", 30.00, 5, supplier)
+    except ValueError as error:
+        print("Caught:", error)
+
 if __name__ == "__main__":
     demo_strategy()
     demo_extension()
+    demo_factory()
